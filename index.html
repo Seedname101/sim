@@ -17,7 +17,7 @@
      with (processingInstance) {
         size(400, 400); 
         frameRate(60);
-  /**WARNING: DO NOT CHANGE THIS CODE. IT WILL RESTART YOUR PROGRAM AND MIGHT DISABLE FUNCTIONALLITY. EVERY LINE COUNTS!*/
+ /**WARNING: DO NOT CHANGE THIS CODE. IT WILL RESTART YOUR PROGRAM AND MIGHT DISABLE FUNCTIONALLITY. EVERY LINE COUNTS!*/
 //Made By: Julian Dominguez; 7th grade.
 //Start: Tuesday, December 4th
 //End: Monday, December 10th
@@ -365,15 +365,38 @@ this.size = new PVector(11, 11);
 };
 Mouse.prototype.display = function(){
 
+fill(fillc);
+noStroke();
+//top
+rect(this.position.x, this.position.y, this.size.x+-5, this.size.y+-5);
+//lefttop
+rect(this.position.x+-4, this.position.y+5, this.size.x+-5, this.size.y+-5);
+//right top
+rect(this.position.x+4, this.position.y+5, this.size.x+-5, this.size.y+-5);
+//right
+rect(this.position.x+7, this.position.y+10, this.size.x+-5, this.size.y+-5);
+//left
+rect(this.position.x+-7, this.position.y+10, this.size.x+-5, this.size.y+-5);
+//right
+rect(this.position.x+10, this.position.y+15, this.size.x+-5, this.size.y+-5);
+//left
+rect(this.position.x+-10, this.position.y+15, this.size.x+-5, this.size.y+-5);
+rect(this.position.x, this.position.y+15, this.size.x+-5, this.size.y+-5);
+
 };
 Mouse.prototype.update = function(){
-
+this.position.x = mouseX;
+this.position.y = mouseY;
 };
 Mouse.prototype.mouseC = function(){
-
+    fillc = color(0, 255, 0);
+this.size.x += 0.1;
+this.size.y += 0.1;
 };
 Mouse.prototype.mouseR = function(){
-
+fillc = color(0, 0, 255);
+this.size.x -= 0.1;
+this.size.y -= 0.1;
 };
 var Tensional = function(){
 this.position = new PVector(89, 357);
@@ -1281,6 +1304,7 @@ mouseReleased = function(){
 mouse.mouseR();
 };
 //1 THOUSAND LINES IN 4 DAYS!
+
 
     }};
 

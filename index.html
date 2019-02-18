@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+
+<html> 
+ <head>
+    <title>Template for Websites</title> 
+</head>
+ <body>
+    <p align="center"> 
+      <canvas id="mycanvas"></canvas> 
+    </p>
+ </body>
+
+ <script src="https://cdn.jsdelivr.net/processing.js/1.4.8/processing.min.js"></script> 
+ 
+ <script>
+    var sketchProc = function(processingInstance) {
+     with (processingInstance) {
+        size(400, 400); 
+        frameRate(60);
+  /**WARNING: DO NOT CHANGE THIS CODE. IT WILL RESTART YOUR PROGRAM AND MIGHT DISABLE FUNCTIONALLITY. EVERY LINE COUNTS!*/
+//Made By: Julian Dominguez; 7th grade.
+//Start: Tuesday, December 4th
+//End: Monday, December 10th
+//Line count: 1206
+/**ATTENTION: I have noticed a flaw when I was programming the third simulation: The F = MA formula is flawed, since the mass is one. The first three simulations will experience this flaw. The fourth one works perfectly and is pretty much an exact representation.
+*/
+var fills = color(200, 200, 200);
+var backrgb = color(0);
+var accelerationV = 5;
+var accelerationF = 0.5;
+var frictionN = 5;
+var limitS = 10;
+var fin = 0;
+var lt = 0;
+var lightsr = 255;
+var lightsg = 0;
+var lightsb = 0;
+var lr = 0;
+var lg = 160;
+var lb = 255;
+var strokeThr = 255;
+var strokeThb = 255;
+var windTimer = 0;
+var ARV = 5;
+var gravWV = 1;
+var windR = 0.05;
+var multiplyWindM = 50;
+var gravityW = 0.1;
+angleMode = "radians";	
+var angle = 0;
+var x1 = 0 ;
+var r = 0;
+var theta = 0;	
+var angle = 0;
+var x1 = 0 ;
+var r = 0;
+var theta = 0;
+var currentScene;
+var timer = 0;
+var timeThingymaBobber = -1;
+var fillr1 = 0;
+var fillg1 = 0;
+var fillb1 = 0;
+var wordsVelocity = new PVector(random(1, 3), random(4, 6));
+var wordsPosition = new PVector(random(0, 300), random(0, 300));
+var something = 0;
+var multiplyMass1w = 50;
+var multiplyMass1h = 50;
+var gravitySimN = 1; 
+var upForce = -0.5;
+var upForceView = 5;
+var def = 0;
+//Uses code from Advanced JS: Natural Simulations (modified) 
+var MoverIntro = function() {
+    this.introMass = 1;
+    this.introPosition = new PVector(width/2-117, -50);
+    this.introVelocity = new PVector(0, 0);
+    this.introAcceleration = new PVector(0, 0);
+};
+MoverIntro.prototype.applyForce = function(force) {
+    var f = PVector.div(force, this.introMass);
+    this.introAcceleration.add(f);
+};
+ MoverIntro.prototype.update = function() {
+    this.introVelocity.add(this.introAcceleration);
+    this.introPosition.add(this.introVelocity);
+    this.introAcceleration.mult(0);
+};
+MoverIntro.prototype.display = function() {
+    stroke(0);
+    strokeWeight(2);
+    fill(0, 0, 0);
+    textSize(this.introMass*30);
+    text("Forces Simulator",this.introPosition.x, this.introPosition.y);
+};
+MoverIntro.prototype.checkEdges = function() {
+    if (this.introPosition.y > height-2) {
+        this.introVelocity.y *= -0.7;
+        this.introPosition.y = height-2;
+    }
+};
+
+
+var GravSim = function() {
+    this.massG = 1;
+    this.positionG = new PVector(width/2-multiplyMass1w*0.5, -50);
+    this.velocityG = new PVector(0, 0);
+    this.accelerationG = new PVector(0, 0);
+};
+GravSim.prototype.applyForce = function(force) {
+    var f = PVector.div(force, this.massG);
+    this.accelerationG.add(f);
+};
+GravSim.prototype.update = function() {
+    this.velocityG.add(this.accelerationG);
+    this.positionG.add(this.velocityG);
+    this.accelerationG.mult(0);
+};
+GravSim.prototype.display = function() {
+    stroke(0);
+    strokeWeight(2);
+    fill(0, 75);
+    rect(this.positionG.x, this.positionG.y, this.massG*multiplyMass1w, this.massG*multiplyMass1h);
+    
+};
+GravSim.prototype.checkEdges = function() {
+    if (this.positionG.y > height-multiplyMass1h) {
+        this.velocityG.y *= upForce;
+        this.positionG.y = height-multiplyMass1h;
+    }
+};
+
+
+var floating = new PVector(0, -0.01);
+var Floaty = function() {
+    this.introMass2 = 1;
+    this.introheight = 100;
+    this.introPosition2 = new PVector(width/2-117, 398);
+    this.introVelocity2 = new PVector(0, 0);
+    this.introAcceleration2 = new PVector(0, 0);
+};
+  
+Floaty.prototype.applyForce = function(force) {
+    var f2 = PVector.div(force, this.introMass2);
+    this.introAcceleration2.add(f2);
+};
+  
+Floaty.prototype.update = function() {
+    this.introVelocity2.add(this.introAcceleration2);
+    this.introPosition2.add(this.introVelocity2);
+    this.introAcceleration2.mult(0);
+};
+
+Floaty.prototype.display = function() {
+    stroke(0);
+    strokeWeight(2);
+    fill(0, 0, 0);
+    textSize(30);
+    text("Forces Simulator",this.introPosition2.x, this.introPosition2.y);
+};
+
+Floaty.prototype.checkEdges = function() {
+if(this.introPosition2.y < height-height+20){
+    this.introVelocity2.y *= -0.9;
+}
+};
+
+var Wind = function(x, y, w, h, c) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.c = c;
+};
+Wind.prototype.contains = function(m) {
+    var p = m.position;
+    return p.x > this.x && p.x < this.x + this.w &&
+           p.y > this.y && p.y < this.y + this.h;
+};
+Wind.prototype.calculateDrag = function(m) {
+    var speed = m.velocity.mag();
+    var dragMagnitude = this.c * speed * speed;
+    var dragForce = m.velocity.get();
+    dragForce.mult(-1);
+    dragForce.normalize();
+    dragForce.mult(dragMagnitude);
+    return dragForce;
+};
+Wind.prototype.display = function() {
+    noStroke();
+    fill(0, 0);
+    rect(this.x, this.y, this.w, this.h);
+};
+
+var Ball = function() {
+    this.mass = 1;
+    this.position = new PVector(width/2, 0);
+    this.velocity = new PVector(0, 0);
+    this.acceleration = new PVector(0, 0);
+};
+  
+Ball.prototype.applyForce = function(force) {
+    var f = PVector.div(force, this.mass);
+    this.acceleration.add(f);
+};
+  
+Ball.prototype.update = function() {
+    this.velocity.add(this.acceleration);
+    this.position.add(this.velocity);
+    this.acceleration.mult(0);
+};
+
+Ball.prototype.display = function() {
+    stroke(0, 0, 0);
+    strokeWeight(2);
+    fill(0, 75);
+    ellipse(this.position.x, this.position.y, this.mass*multiplyWindM, this.mass*multiplyWindM);
+};
+
+Ball.prototype.checkEdges = function() {
+    if (this.position.y > height-multiplyWindM*0.5) {
+        this.velocity.y *= -1;
+        this.position.y = height-multiplyWindM*0.5;
+    }
+};
+
+var Frict = function() {
+    this.mass = 1;
+    this.position = new PVector(78, height-8);
+    this.velocity = new PVector(0, 0);
+    this.acceleration = new PVector(0, 0);
+};
+  
+Frict.prototype.applyForce = function(force) {
+  var f = PVector.div(force, this.mass);
+  this.acceleration.add(f);
+};
+  
+Frict.prototype.update = function() {
+  this.velocity.add(this.acceleration);
+  this.position.add(this.velocity);
+  this.acceleration.mult(0);
+  this.velocity.limit(limitS);
+  if(this.velocity.x < 0.01){
+      this.velocity.set(0, 0); 
+    }
+};
+
+Frict.prototype.display = function() {
+  stroke(0);
+  strokeWeight(2);
+  fill(255, 0, 0);
+  rect(this.position.x+33+26, this.position.y-52, 5, 30, 2);
+  fill(lightsr, lightsg, lightsb);
+  rect(this.position.x+35-26, this.position.y-63, 26, 12, 1);
+   fill(lr, lg, lb);
+  rect(this.position.x+35, this.position.y-63, 26, 12, 1);
+  fill(255, 0, 0);
+  rect(this.position.x-77, this.position.y-63, 85, 12, 1);
+  rect(this.position.x-78, this.position.y-31, 86, 29);
+  rect(this.position.x+6, this.position.y-27, 59, 24, 5);
+  fill(0);
+  ellipse(this.position.x-16-45, this.position.y-2, 25, 25);
+  ellipse(this.position.x+33, this.position.y-2, 25, 25);
+  fill(0, 81, 255);
+  rect(this.position.x+33, this.position.y-47, 26, 21);
+  fill(255, 0, 0);
+  noStroke();
+  rect(this.position.x+33-25, this.position.y-47, 25, 23, 3);
+  stroke(0, 0, 0);
+  rect(this.position.x+6, this.position.y-52, 54, 6);
+  rect(this.position.x-77, this.position.y-52, 84, 22);
+  fill(192, 192, 192);
+  rect(this.position.x-69+20, this.position.y-51, 5, 20);
+  rect(this.position.x-69+11+20, this.position.y-51, 5, 20);
+  noStroke();
+  rect(this.position.x-67+20, this.position.y-48, 11, 3);
+  rect(this.position.x-67+20, this.position.y-48+5, 11, 3);
+  rect(this.position.x-67+20, this.position.y-48+10, 11, 3);
+  stroke(0, 0, 0);
+  fill(0);
+  ellipse(this.position.x+25, this.position.y-26, 6, 2);
+};
+Frict.prototype.checkEdges = function() {
+  if (this.position.x > width) {
+    this.position.x = 0;
+  } 
+  if(this.position.x < width-width){
+      this.position.x = 400;
+  }
+};
+Frict.prototype.mph = function(){
+    //mph code by lucyboyle
+    textSize(15);
+    var mph = 0;
+    mph += this.velocity.x;
+    mph = round(mph);
+    fill(255, 255, 255);
+    text("Speed: " + mph + " mph",width/2-44, width/2+100);
+};
+
+var Attractor = function() {
+    this.position = new PVector(width/2, height/2);
+    this.mass = 27.5*2;
+    this.G = 0.5;
+};
+Attractor.prototype.calculateAttraction = function(mover) {
+    var force = PVector.sub(this.position, mover.position);  
+    var distance = force.mag();                 
+    distance = constrain(distance, 5, 25);              
+    force.normalize(); 
+    var strength = (this.G * this.mass * mover.mass) / (distance * distance);
+    force.mult(strength);
+    return force;
+};
+Attractor.prototype.display = function() {
+    ellipseMode(CENTER);
+    strokeWeight(4);
+    stroke(0);
+    fill(255, 255, 0);
+    ellipse(this.position.x, this.position.y, this.mass, this.mass);
+};
+var Mover = function() {
+    this.position = new PVector(400, 0);
+    this.velocity = new PVector(1, 0);
+    this.acceleration = new PVector(0, 0);
+    this.mass = 10;
+};
+  
+Mover.prototype.applyForce = function(force) {
+    var f = PVector.div(force,this.mass);
+    this.acceleration.add(f);
+};
+  
+Mover.prototype.update = function() {
+    this.velocity.add(this.acceleration);
+    this.position.add(this.velocity);
+    this.acceleration.mult(0);
+};
+
+Mover.prototype.display = function() {
+    stroke(0);
+    strokeWeight(2);
+    fill(255, 255, 255);
+    ellipse(this.position.x, this.position.y, this.mass, this.mass);
+stroke(fills);
+beginShape();
+curveVertex(width/2-10, height/2-10);
+curveVertex(width/2-10, height/2-10);
+curveVertex(this.position.x,  this.position.y);
+curveVertex(this.position.x,  this.position.y);
+endShape();
+beginShape();
+curveVertex(width/2+10, height/2+10);
+curveVertex(width/2+10, height/2+10);
+curveVertex(this.position.x,  this.position.y);
+curveVertex(this.position.x,  this.position.y);
+endShape();
+};
+
+var fillc = color(0, 0, 255);
+var Mouse = function(){
+this.position = new PVector(mouseX, mouseY);
+this.size = new PVector(11, 11);
+};
+Mouse.prototype.display = function(){
+if(keyPressed === false){
+fill(fillc);
+noStroke();
+//top
+rect(this.position.x, this.position.y, this.size.x+-5, this.size.y+-5);
+//lefttop
+rect(this.position.x+-4, this.position.y+5, this.size.x+-5, this.size.y+-5);
+//right top
+rect(this.position.x+4, this.position.y+5, this.size.x+-5, this.size.y+-5);
+//right
+rect(this.position.x+7, this.position.y+10, this.size.x+-5, this.size.y+-5);
+//left
+rect(this.position.x+-7, this.position.y+10, this.size.x+-5, this.size.y+-5);
+//right
+rect(this.position.x+10, this.position.y+15, this.size.x+-5, this.size.y+-5);
+//left
+rect(this.position.x+-10, this.position.y+15, this.size.x+-5, this.size.y+-5);
+rect(this.position.x, this.position.y+15, this.size.x+-5, this.size.y+-5);
+}
+};
+Mouse.prototype.update = function(){
+this.position.x = mouseX;
+this.position.y = mouseY;
+};
+Mouse.prototype.mouseC = function(){
+    fillc = color(0, 255, 0);
+this.size.x += 0.1;
+this.size.y += 0.1;
+};
+Mouse.prototype.mouseR = function(){
+fillc = color(0, 0, 255);
+this.size.x -= 0.1;
+this.size.y -= 0.1;
+};
+var Tensional = function(){
+this.position = new PVector(89, 357);
+this.velocity = new PVector(0, 0);
+this.acceleration = new PVector(0, 0);
+this.mass = new PVector(198, 10);
+this.applied1 = new PVector(10, 0);
+this.applied2 = new PVector(10, 0);
+};
+Tensional.prototype.update = function(){
+this.velocity.add(this.acceleration);
+    this.position.add(this.velocity);
+    this.acceleration.mult(0);
+};
+Tensional.prototype.applyForce = function(pressure, force){
+  var p = PVector.mult(force, this.mass.x * this.mass.y);
+    this.acceleration.add(p);
+};
+Tensional.prototype.stringforce = function(){
+};
+Tensional.prototype.display = function(){
+    stroke(0);
+    fill(138, 90, 65);
+    rect(this.position.x, this.position.y, this.mass.x, this.mass.y, 2);
+    fill(0, 0, 0);
+    textSize(30);
+    text("Under Construction", width/2-131, height/2);
+};
+Tensional.prototype.clicked = function(){
+
+};
+Tensional.prototype.applyForces = function(){
+
+};
+Tensional.prototype.checkEdges = function(){
+
+};
+var tens = new Tensional();
+var mouse = new Mouse();
+
+var n = new Floaty(); 
+
+var m1 = new MoverIntro(); 
+
+var gsim = new GravSim();
+
+var a = new Ball();
+
+
+var fr = new Frict();
+
+var mover = new Mover();
+var attractor = new Attractor();
+
+draw = function() {
+var wind = new Wind(0, height-height, width, height, windR);
+
+currentScene = 0;
+if(currentScene === 0){
+timeThingymaBobber += 1.5;
+timer += 0.015;
+ pushMatrix();
+    translate(width/2, height/2);
+    
+    var x = r * cos(theta);
+    var y = r * sin(theta);
+    noStroke();
+    fill(fillr1, fillg1, fillb1);
+    
+    ellipse(x, y, 10, 10);
+    popMatrix();
+    
+    theta += 1;
+    r += 0.2;
+    
+    if(timeThingymaBobber > 0){
+        fillr1 = 255;
+        fillg1 = 0;
+        fillb1 = 0;
+    }
+    if((timeThingymaBobber > 100)&& fillr1 === 255 && fillg1 === 0){
+        fillr1 = 255;
+        fillg1 = 165;
+        fillb1 = 0;
+    }
+    if((timeThingymaBobber > 200)&& fillr1 === 255 && fillg1 === 165){
+        fillr1 = 255;
+        fillg1 = 255;
+        fillb1 = 0;
+    }
+    if((timeThingymaBobber > 300)&& fillr1 === 255 && fillg1 === 255){
+        fillr1 = 0;
+        fillg1 = 255;
+        fillb1 = 0;
+    }
+    if((timeThingymaBobber > 400)&& fillr1 === 0 && fillg1 === 255){
+        fillr1 = 0;
+        fillg1 = 0;
+        fillb1 = 255;
+    }
+    if((timeThingymaBobber > 500)&& fillr1 === 0 && fillg1 === 0 && fillb1 === 255){
+        fillr1 = 128;
+        fillg1 = 0;
+        fillb1 = 128;
+    }
+    if(timeThingymaBobber > 600){
+        timeThingymaBobber = 0;
+    }
+    
+    if(timer > 21.5){
+        currentScene = 1;
+        wordsPosition.add(wordsVelocity);
+        
+        stroke(0, 0, 0);
+        background(255, 255, 255);
+       
+        
+        textSize(30);
+        fill(0, 0, 255);
+        text("Presented by ", width/2-89, height/2-30);
+        
+        fill(255, 0, 0);
+        text("Julian", wordsPosition.x, wordsPosition.y);
+        
+    if ((wordsPosition.x > width-75) || (wordsPosition.x < 0)) {
+        wordsVelocity.x *= -1;
+    }
+    if ((wordsPosition.y > height) || (wordsPosition.y < 20)) {
+        wordsVelocity.y *= -1;
+    }
+    }
+}
+if(timer > 30){
+    background(255, 255, 255);
+    var gravity = new PVector(0, 1);
+    m1.applyForce(gravity);
+    m1.update();
+    m1.display();
+    m1.checkEdges();
+}
+if(timer > 33){
+    background(255, 255, 255);
+    n.applyForce(floating);
+    n.update();
+    n.display();
+    n.checkEdges();
+}
+if(timer > 51){
+    background(255, 255, 255);
+    pushMatrix();
+    translate(200,200);
+    rotate(angle);
+    fill(0, 0, 0);
+    textSize(30);
+    text("Forces Simulator", width-400-122 , 0);
+    popMatrix();
+    angle += x1;
+    x1 += 0.00005;
+    strokeWeight(1);
+    fill(255, 255, 255);
+    rect(width/2-60, height/2+107, 100, 60);
+    fill(0, 0, 0);
+    text("Start", width/2-43, height/2+150);
+}
+if(something === 1){
+currentScene = 2;
+background(0, 107, 143);
+fill(255, 255, 255);
+rect(width-width+12, height-height+10, 62, 25);
+rect(width-width+87, height-height+10, 62, 25);
+fill(0, 0, 0);
+textSize(12);
+text("- Gravity", width-width+15, height-height+27);
+text("+ Gravity", width-width+94, height-height+27);
+textSize(15);
+text("Gravity:" + " " + gravitySimN, width-width+48, height-height+52);
+text("Mass:" + " " + multiplyMass1w, width-width+287,  height-height+52);
+fill(255, 255, 255);
+rect(width-width+385-62-62-13, height-height+10, 62, 25);
+rect(width-width+385-62, height-height+10, 62, 25);
+fill(0, 0, 0);
+textSize(12);
+text("- Mass", width-width+256, height-height+27);
+text("+ Mass", width-width+330, height-height+27);
+fill(255, 255, 255);
+rect(width/2-31, height-height+10, 62, 25);
+fill(0, 0, 0);
+text("Next", width/2-15.5, height-height+27);
+fill(255, 255, 255);
+rect(width-width+12, height-height+59, 62, 25);
+rect(width-width+87, height-height+59, 62, 25);
+fill(0, 0, 0);
+text("- Bounce", width-width+15, height-height+76);
+text("+ Bounce", width-width+94, height-height+76);
+textSize(15);
+text("Upwards Force:" + " ~" + upForceView, width-width+160, height-height+79);
+fill(255, 255, 255);
+rect(width-62-15, height-height+59, 62, 25);
+textSize(12);
+fill(0, 0, 0);
+text("Defenition", width-62-12, height-height+76);
+    var gravity1 = new PVector(0, gravitySimN);
+    gsim.applyForce(gravity1);
+    gsim.update();
+    gsim.display();
+    gsim.checkEdges();
+}
+if(something === 2){
+background(0, 107, 143);
+textSize(12);
+fill(255, 255, 255);
+rect(width/2-31, height-height+10, 62, 25);
+fill(0, 0, 0);
+text("Next", width/2-15.5, height-height+27);
+textSize(30);
+fill(255, 255, 255);
+rect(width-width+12, height-height+10, 62, 25);
+rect(width-width+87, height-height+10, 62, 25);
+fill(0, 0, 0);
+textSize(12);
+text("- Gravity", width-width+15, height-height+27);
+text("+ Gravity", width-width+94, height-height+27);
+textSize(15);
+text("Gravity:" + " " + gravWV, width-width+48, height-height+52);
+text("Mass:" + " " + multiplyWindM, width-width+287,  height-height+52);
+fill(255, 255, 255);
+rect(width-width+385-62-62-13, height-height+10, 62, 25);
+rect(width-width+385-62, height-height+10, 62, 25);
+fill(0, 0, 0);
+textSize(12);
+text("- Mass", width-width+256, height-height+27);
+text("+ Mass", width-width+330, height-height+27);
+fill(255, 255, 255);
+rect(width-width+12, height-height+59, 62, 25);
+rect(width-width+87, height-height+59, 62, 25);
+fill(0, 0, 0);
+text("- Wind", width-width+15, height-height+76);
+text("+ Wind", width-width+94, height-height+76);
+textSize(15);
+text("Air Resistaince: " + ARV, width-width+160, height-height+79);
+fill(255, 255, 255);
+rect(width-62-15, height-height+59, 62, 25);
+textSize(12);
+fill(0, 0, 0);
+text("Defenition", width-62-12, height-height+76);
+
+    
+  
+ wind.display();
+if (wind.contains(a)) {
+var dragForce = wind.calculateDrag(a);
+a.applyForce(dragForce);
+        }
+var gravity = new PVector(0, gravityW*a.mass);
+        a.applyForce(gravity);
+        a.update();
+        a.display();
+        a.checkEdges();
+}
+if(something === 3){
+    background(0, 107, 143);
+    textSize(12);
+    fill(255, 255, 255);
+    rect(width/2-31, height-height+10, 62, 25);
+    fill(0, 0, 0);
+    text("Next", width/2-15.5, height-height+27);
+   fill(255, 255, 255);
+   rect(width-62-15, height-height+59, 62, 25);
+   textSize(12);
+   fill(0, 0, 0);
+  text("Defenition", width-62-12, height-height+76);
+    text("Press and hold the right arrow to go. Press and hold the left arrow to brake.", fin, 265); 
+    textSize(30);
+fill(255, 255, 255);
+rect(width-width+12, height-height+10, 62, 25);
+rect(width-width+87, height-height+10, 62, 25);
+fill(0, 0, 0);
+textSize(12);
+text("- Friction", width-width+15, height-height+27);
+text("+ Friction", width-width+94, height-height+27);
+textSize(15);
+text("Friction:" + " " + frictionN, width-width+48, height-height+52);
+text("Acceleration:" + " " + accelerationV, width-width+262,  height-height+52);
+fill(255, 255, 255);
+rect(width-width+385-62-62-13, height-height+10, 62, 25);
+rect(width-width+385-62, height-height+10, 62, 25);
+fill(0, 0, 0);
+textSize(12);
+text("- Speed", width-width+256, height-height+27);
+text("+ Speed", width-width+330, height-height+27);
+fill(255, 255, 255);
+rect(width-width+12, height-height+59, 62, 25);
+rect(width-width+87, height-height+59, 62, 25);
+fill(0, 0, 0);
+text("-Top Speed", width-width+12, height-height+76);
+text("+Top Speed", width-width+85, height-height+76);
+textSize(15);
+text("Top Speed: " + limitS + " mph", width-width+160, height-height+79);
+
+    var c = 0.01;
+    var normal = 5; //Friction
+    var frictionMag = c * normal;
+    var friction = fr.velocity.get();
+    friction.mult(-1);
+    friction.normalize();
+    friction.mult(frictionMag);
+    
+    fr.applyForce(friction);
+    fr.mph();
+    fr.update();
+    fr.display();
+    fr.checkEdges();
+
+}
+if(something === 4){
+ background(backrgb);
+ textSize(12);
+fill(255, 255, 255);
+rect(width/2-31, height-height+10, 62, 25);
+fill(0, 0, 0);
+text("Next", width/2-15.5, height-height+27);
+textSize(30);
+fill(255, 255, 255);
+rect(width-width+12, height-height+10, 62, 25);
+rect(width-width+87, height-height+10, 62, 25);
+fill(0, 0, 0);
+textSize(12);
+text("- Gravity", width-width+15, height-height+27);
+text("+ Gravity", width-width+94, height-height+27);
+textSize(15);
+fill(255, 255, 255);
+text("Gravity:" + " " + round(attractor.G*10)/10, width-width+48, height-height+52);
+text("Mass 1:" + " " + attractor.mass, width-width+276,  height-height+52);
+fill(255, 255, 255);
+rect(width-width+385-62-62-13, height-height+10, 62, 25);
+rect(width-width+385-62, height-height+10, 62, 25);
+fill(0, 0, 0);
+textSize(12);
+text("- Mass 1", width-width+256, height-height+27);
+text("+ Mass 1", width-width+330, height-height+27);
+fill(255, 255, 255);
+rect(width-width+12, height-height+59, 62, 25);
+rect(width-width+87, height-height+59, 62, 25);
+fill(0, 0, 0);
+text("- Mass 2", width-width+15, height-height+76);
+text("+ Mass 2", width-width+94, height-height+76);
+textSize(15);
+fill(255, 255, 255);
+text("Mass 2: " + mover.mass, width-width+160, height-height+79);
+fill(255, 255, 255);
+rect(width-62-15, height-height+59, 62, 25);
+textSize(12);
+fill(0, 0, 0);
+text("Formula", width-62-9, height-height+76);
+var spd = floor(dist(mover.position.x, mover.position.y, attractor.position.x, attractor.position.y));
+fill(255, 255, 255);
+text("Distance of the planet to the sun: " + spd + " million miles", 14, 105);
+
+  var force = attractor.calculateAttraction(mover);
+ 
+  mover.applyForce(force);
+  mover.update();
+ 
+  attractor.display();
+  mover.display();
+  
+}
+if(something === 5){
+background(0, 107, 143);
+textSize(12);
+fill(255, 255, 255);
+rect(width/2-31, height-height+10, 62, 25);
+fill(0, 0, 0);
+text("Next", width/2-15.5, height-height+27);
+textSize(30);
+fill(255, 255, 255);
+rect(width-width+12, height-height+10, 62, 25);
+rect(width-width+87, height-height+10, 62, 25);
+fill(0, 0, 0);
+textSize(12);
+text("- Gravity", width-width+15, height-height+27);
+text("+ Gravity", width-width+94, height-height+27);
+textSize(15);
+fill(0, 0, 0);
+text("Gravity:" + " " + round(attractor.G*10)/10, width-width+48, height-height+52);
+text("Mass 1:" + " " + attractor.mass, width-width+276,  height-height+52);
+fill(255, 255, 255);
+rect(width-width+385-62-62-13, height-height+10, 62, 25);
+rect(width-width+385-62, height-height+10, 62, 25);
+fill(0, 0, 0);
+textSize(12);
+text("- Mass 1", width-width+256, height-height+27);
+text("+ Mass 1", width-width+330, height-height+27);
+fill(255, 255, 255);
+rect(width-width+12, height-height+59, 62, 25);
+rect(width-width+87, height-height+59, 62, 25);
+fill(0, 0, 0);
+text("- Mass 2", width-width+15, height-height+76);
+text("+ Mass 2", width-width+94, height-height+76);
+textSize(15);
+fill(0, 0, 0);
+text("Mass 2: " + mover.mass, width-width+160, height-height+79);
+fill(255, 255, 255);
+rect(width-62-15, height-height+59, 62, 25);
+textSize(12);
+fill(0, 0, 0);
+text("Defenition", width-62-11, height-height+76);
+var pressure = new PVector(tens.applied1.x, tens.applied2.x);
+var force = new PVector(0, 0);
+tens.checkEdges();
+tens.display();
+
+tens.applyForce(pressure, force);
+
+tens.update();
+tens.clicked();
+tens.stringforce();
+}
+if((a.position.y < 355) && something === 2){
+    windTimer += 0.015;
+} 
+if((windTimer > 0.5) && something === 2){
+    stroke(strokeThr, strokeThb);
+    fill(0, 0);
+    bezier(232, 400, 289, 334, 215, 320, 239, 363);
+} 
+if((windTimer > 1) && something === 2){
+    bezier(232-50, 400, 289-50, 334, 215-50, 320, 239-50, 363);
+}
+if((windTimer > 1.5) && something === 2){
+     bezier(232-50-50, 400, 289-50-50, 334, 215-50-50, 320, 239-50-50, 363);
+}
+if((a.position.y > 355) && something === 2){
+   strokeThr = 0;
+   strokeThb = 0;
+} else{
+    strokeThr = 255;
+    strokeThb = 255;
+}
+if(windTimer > 2){
+    windTimer = 0;
+}
+if(multiplyMass1w < 50){
+    multiplyMass1w = 50;
+    multiplyMass1h = 50;
+    gsim.positionG.x = width/2-multiplyMass1w*0.5;
+}
+if(multiplyMass1w > 300){
+    multiplyMass1w = 300;
+    multiplyMass1h = 300;
+    gsim.positionG.x = width/2-multiplyMass1w*0.5;
+}
+if(gravitySimN > 15.1){
+    gravitySimN = 15;
+} else if(gravitySimN < 0.4){
+    gravitySimN = 0.5;
+}
+if((mouseX >= width/2-60 && mouseX <= width/2-60+100 && 
+    mouseY >= height/2+107 && mouseY <= height/2+107+60) && timer > 50){
+        cursor(HAND);
+    } else if(mouseX && mouseY !== (mouseX >= width/2-60 && mouseX <= width/2-60+100 && mouseY >= height/2+107 && mouseY <= height/2+107+60)){
+        cursor(ARROW);
+    }  if((mouseX >= width/2-60 && mouseX <= width/2-60+100 && 
+    mouseY >= height/2+107 && mouseY <= height/2+107+60) && something > 0){
+        cursor(ARROW);
+    }
+if(something > 5){
+    something = 1;
+}
+if(upForceView < 0){
+    upForce = 0;
+    upForceView = 0;
+}
+if(upForceView > 10){
+    upForceView = 10;
+    upForce = -0.99;
+}
+if(upForce < -0.99){
+    upForce = -0.99;
+}
+if(def === 1){
+    fill(0, 100);
+    rect(0, 0, 400, 400);
+    fill(255, 255, 255);
+    rect(width/2-150, height/2-130, 300, 300);
+    textSize(30);
+    fill(0, 0, 0);
+    text("Grav·i·ty:", width-width+60, height-height+100);
+    textSize(15);
+    text("(/ˈɡravədē/)", width-width+60, height-height+120);
+    text(" The force that attracts a body toward the \ncenter of the earth, or toward any other \nphysical body having mass. For most \npurposes Newton's laws of gravity apply, \nwith minor modifications to take the \ngeneral theory of relativity into account.", width-width+60, height-height+160);
+    textSize(10);
+    text("(Click the X to exit)", width-width+60, height-height+280);
+    textSize(8);
+    text("Source: Google© 2018", width-width+60, height-height+300);
+    fill(255, 0, 0);
+    rect(width-70, height-50, 20, 20);
+    textSize(15);
+    fill(0, 0, 0);
+    text("X", width-65, height-34);
+}
+if(def === 2){
+     fill(0, 100);
+    rect(0, 0, 400, 400);
+    fill(255, 255, 255);
+    rect(width/2-150, height/2-130, 300, 300);
+    textSize(30);
+    fill(0, 0, 0);
+    text("Air Re·sist·ance:", width-width+60, height-height+100);
+    textSize(15);
+    text("(/er rəˈzistəns/)", width-width+60, height-height+120);
+    text(" The forces that are in opposition to the \nrelative motion of an object as it passes \nthrough the air. These drag forces act \nopposite to the oncoming flow velocity, \nthus slowing the object down. Unlike other \nresistance forces, drag depends directly on \nvelocity, since it is the component of the \nnet aerodynamic force acting opposite to \nthe direction of the movement.", width-width+60, height-height+160);
+    textSize(10);
+    text("(Click the X to exit)", width-width+60, height-height+330);
+    textSize(8);
+    text('Source: "https://www.universetoday.com/73315/what-is-air-resistance/"', width-width+60, height-height+350);
+    fill(255, 0, 0);
+    rect(width-70, height-50, 20, 20);
+    textSize(15);
+    fill(0, 0, 0);
+    text("X", width-65, height-34);
+}
+if(def === 3){
+     fill(0, 100);
+    rect(0, 0, 400, 400);
+    fill(255, 255, 255);
+    rect(width/2-150, height/2-130, 300, 300);
+    textSize(30);
+    fill(0, 0, 0);
+    text("Fric·tion:", width-width+60, height-height+100);
+    textSize(15);
+    text("(/ˈfrikSH(ə)n/)", width-width+60, height-height+120);
+    text("1. The resistance that one surface or object \nencounters when moving over another.\n\n2. The action of one surface or object \nrubbing against another.", width-width+60, height-height+160);
+    textSize(10);
+    text("(Click the X to exit)", width-width+60, height-height+260);
+    textSize(8);
+    text('Source: Google© 2018', width-width+60, height-height+280);
+    fill(255, 0, 0);
+    rect(width-70, height-50, 20, 20);
+    textSize(15);
+    fill(0, 0, 0);
+    text("X", width-65, height-34);
+}
+if(def === 4){
+    var spd = floor(dist(mover.position.x, mover.position.y, attractor.position.x, attractor.position.y));
+     fill(0, 100);
+    rect(0, 0, 400, 400);
+    fill(255, 255, 255);
+    rect(width/2-150, height/2-130, 300, 300);
+    textSize(30);
+    fill(0, 0, 0);
+    text("Formula for\nGravitational Force:", width-width+60, height-height+100);
+    textSize(40);
+    text("G", width-width+77+100-29, height-height+200);
+    textSize(17);
+    text("m1" + " m2", 107+100-25, 184);
+    text("______", 104+100-25, 187);
+    text("r^2", 114+100-19, 204);
+    text("In This Case:", 149, 232);
+    textSize(35);
+    text(round(attractor.G*10)/1 + "/10", width-width+77+47-29, height-height+200+85);
+    textSize(17);
+    text(attractor.mass + "*" + mover.mass, 107+100-25, 184+85);
+    text("______", 104+100-25, 187+85);
+    text(spd + "M" + "^2", 114+85-19, 204+85);
+    textSize(10);
+    text("(Click the X to exit)", width-width+60, height-height+322);
+    fill(255, 0, 0);
+    rect(width-70, height-50, 20, 20);
+    textSize(15);
+    fill(0, 0, 0);
+    text("X", width-65, height-34);
+}
+if(gravityW > 1){
+    gravityW = 1;
+    gravWV = 10;
+}
+if(gravityW < 0.07){
+    gravityW = 0.1;
+    gravWV = 0;
+}
+if(multiplyWindM > 300){
+    multiplyWindM = 300;
+}
+if(multiplyWindM < 50){
+    multiplyWindM = 50;
+}
+if(ARV > 10){
+    ARV = 10;
+    windR = 0.1;
+}
+if(ARV < 0){
+    ARV = 0;
+    windR = 0;
+}
+if(fr.velocity.x > 0){
+    lt += 0.015;
+} else{
+    lt = 0;
+}
+
+if(lt > 0){
+    lr = 255;
+    lg = 255;
+    lb = 255;
+    lightsr = 255;
+    lightsg = 0;
+    lightsb = 0;
+    
+}
+if(lt > 0.35){
+    lr = 0;
+    lg = 160;
+    lb = 255;
+    lightsr = 255;
+    lightsg = 255;
+    lightsb = 255;
+}
+
+if(lt > 0.70){
+    lt = 0;
+}
+if(lt === 0){
+    if(fr.velocity.x <= 0){
+    lr = 0;
+    lg = 160;
+    lb = 255;
+    lightsr = 255;
+    lightsg = 0;
+    lightsb = 0;
+}
+}
+if(frictionN > 20){
+    frictionN = 20;
+}
+if(frictionN < 0){
+    frictionN = 0;
+}
+if(accelerationV > 10){
+    accelerationV = 10;
+    fr.acceleration.x = 1;
+}
+if(accelerationV < 1){
+    accelerationV = 1;
+    fr.acceleration.x = 0.1;
+}
+if(limitS < 1){
+    limitS = 1;
+}
+if(limitS > 20){
+    limitS = 20;
+}
+if(mover.position === attractor.position){
+    mover.velocity += 0;
+}
+if(attractor.G > 2){
+    attractor.G = 2;
+}
+if(attractor.G < 0.1){
+    attractor.G = 0.1;
+}
+if(attractor.mass > 70){
+    attractor.mass = 70;
+}
+if(attractor.mass < 35){
+    attractor.mass = 35;
+}
+if(mover.mass < 2){
+    mover.mass = 2;
+}
+if(mover.mass > 20){
+    mover.mass = 20;
+}
+
+keyPressed = function(){
+if(something === 3 && (keyCode === RIGHT)){
+    fin = 1000;
+    fr.acceleration.set(accelerationF, 0);
+    var c = 0.01;
+    var normal = frictionN; //Friction
+    var frictionMag = c * normal;
+    var friction = fr.velocity.get();
+    friction.mult(-1);
+    friction.normalize();
+    friction.mult(frictionMag);
+    fr.applyForce(friction);
+    fr.update();
+    fr.display();
+    fr.checkEdges();
+    
+} else if(something === 3 && keyCode === LEFT){
+    fin = 1000;
+    fr.acceleration.set(-1, 0);
+    } 
+};
+
+if(currentScene > 0){
+cursor("NONE");
+mouse.display();
+mouse.update();
+}
+};
+mouseClicked = function(){
+    //start button
+    
+if(timer > 51 &&(mouseX >= width/2-60 && mouseX <= width/2-60+100 && 
+    mouseY >= height/2+107 && mouseY <= height/2+107+60) && something === 0){
+        something += 1;
+    }
+//something is 1; gravity
+//Gravity increase/decrease
+if((mouseX >= width-width+12 && mouseX <= width-width+12+62 &&
+    mouseY >= height-height+10 && mouseY <= height-height+10+25)&& something === 1){
+        gravitySimN -= 0.5;
+        gsim.positionG.y = height-height-multiplyMass1w;
+    }
+if((mouseX >= width-width+87 && mouseX <= width-width+87+62 &&
+    mouseY >= height-height+10 && mouseY <= height-height+10+25)&& something === 1){
+        gravitySimN += 0.5;
+        gsim.positionG.y = height-height-multiplyMass1w;
+    }
+//mass increase/decrease
+if((mouseX >= width-width+385-62-62-13 && mouseX <= width-width+385-62-62-13+62 &&
+    mouseY >= height-height+10 && mouseY <= height-height+10+25) && something === 1){
+        multiplyMass1w -= 50;
+        multiplyMass1h -= 50;
+        gsim.positionG.y = height-height-multiplyMass1w;
+        gsim.positionG.x += 25;
+    }
+if((mouseX >= width-width+385-62 && mouseX <= width-width+385-62+62 &&
+    mouseY >= height-height+10 && mouseY <= height-height+10+25) && something === 1){
+        multiplyMass1w += 50;
+        multiplyMass1h += 50;
+        gsim.positionG.y = height-height-multiplyMass1w;
+        gsim.positionG.x -= 25;
+    }
+//Upwards force/bounce (increase/decrease)
+ if((mouseX >= width-width+12 && mouseX <= width-width+12+62 && 
+mouseY >= height-height+59 && mouseY <= height-height+59+25) && something === 1){
+    upForceView -= 1;
+    upForce += 0.1;
+    gsim.positionG.y = height-height-multiplyMass1w;
+}
+if((mouseX >= width-width+87 && mouseX <= width-width+87+62 && 
+mouseY >= height-height+59 && mouseY <= height-height+59+25) && something === 1){
+    upForceView += 1;
+    upForce -= 0.1;
+    gsim.positionG.y = height-height-multiplyMass1w;
+}
+
+//something is 2; Air resistaince.
+//gravity
+if((mouseX >= width-width+12 && mouseX <= width-width+12+62 &&
+    mouseY >= height-height+10 && mouseY <= height-height+10+25)&& something === 2){
+        gravityW -= 0.1;
+        gravWV -= 1;
+        a.position.y = height-height-multiplyWindM;
+    }
+if((mouseX >= width-width+87 && mouseX <= width-width+87+62 &&
+    mouseY >= height-height+10 && mouseY <= height-height+10+25)&& something === 2){
+        gravityW += 0.1;
+        gravWV += 1;
+        a.position.y = height-height-multiplyWindM;
+    }
+//mass
+if((mouseX >= width-width+385-62-62-13 && mouseX <= width-width+385-62-62-13+62 &&
+    mouseY >= height-height+10 && mouseY <= height-height+10+25) && something === 2){
+        multiplyWindM -= 50;
+        a.position.y = height-height-multiplyWindM;
+    }
+if((mouseX >= width-width+385-62 && mouseX <= width-width+385-62+62 &&
+    mouseY >= height-height+10 && mouseY <= height-height+10+25) && something === 2){
+        multiplyWindM += 50;
+        a.position.y = height-height-multiplyWindM;
+    }
+//air resistance
+ if((mouseX >= width-width+12 && mouseX <= width-width+12+62 && 
+mouseY >= height-height+59 && mouseY <= height-height+59+25) && something === 2){
+    ARV -= 1;
+    windR -= 0.01;
+    a.position.y = height-height-multiplyWindM;
+}
+if((mouseX >= width-width+87 && mouseX <= width-width+87+62 && 
+mouseY >= height-height+59 && mouseY <= height-height+59+25) && something === 2){
+    ARV += 1;
+    windR += 0.01;
+    a.position.y = height-height-multiplyWindM;
+}
+//something is 3; friction
+//friction
+if((mouseX >= width-width+12 && mouseX <= width-width+12+62 &&
+    mouseY >= height-height+10 && mouseY <= height-height+10+25)&& something === 3){
+        frictionN -= 1;
+        fr.position.x = 78;
+        fin = 0;
+        fr.velocity.x = 0;
+    }
+if((mouseX >= width-width+87 && mouseX <= width-width+87+62 &&
+    mouseY >= height-height+10 && mouseY <= height-height+10+25)&& something === 3){
+        frictionN += 1;
+        fr.position.x = 78;
+        fin = 0;
+        fr.velocity.x = 0;
+    }
+//acceleration
+if((mouseX >= width-width+385-62-62-13 && mouseX <= width-width+385-62-62-13+62 &&
+    mouseY >= height-height+10 && mouseY <= height-height+10+25) && something === 3){
+        accelerationF -= 0.1;
+        fr.position.x = 78;
+        accelerationV -= 1;
+        fin = 0;
+        fr.velocity.x = 0;
+    }
+if((mouseX >= width-width+385-62 && mouseX <= width-width+385-62+62 &&
+    mouseY >= height-height+10 && mouseY <= height-height+10+25) && something === 3){
+        accelerationF += 0.1;
+        accelerationV += 1;
+        fr.position.x = 78;
+        fin = 0;
+        fr.velocity.x = 0;
+    }
+//top speed
+ if((mouseX >= width-width+12 && mouseX <= width-width+12+62 && 
+mouseY >= height-height+59 && mouseY <= height-height+59+25) && something === 3){
+        limitS -= 1;
+        fr.position.x = 78;
+        fin = 0;
+        fr.velocity.x = 0;
+}
+if((mouseX >= width-width+87 && mouseX <= width-width+87+62 && 
+mouseY >= height-height+59 && mouseY <= height-height+59+25) && something === 3){
+        limitS += 1;
+        fr.position.x = 78;
+        fin = 0;
+        fr.velocity.x = 0;
+}
+//something is 4, grav attr.
+//grav
+if((mouseX >= width-width+12 && mouseX <= width-width+12+62 &&
+    mouseY >= height-height+10 && mouseY <= height-height+10+25)&& something === 4){
+        attractor.G -= 1/10;
+    }
+if((mouseX >= width-width+87 && mouseX <= width-width+87+62 &&
+    mouseY >= height-height+10 && mouseY <= height-height+10+25)&& something === 4){
+        attractor.G += 1/10;
+    }
+//mass 2
+if((mouseX >= width-width+385-62-62-13 && mouseX <= width-width+385-62-62-13+62 &&
+    mouseY >= height-height+10 && mouseY <= height-height+10+25) && something === 4){
+        attractor.mass -= 1;
+    }
+if((mouseX >= width-width+385-62 && mouseX <= width-width+385-62+62 &&
+    mouseY >= height-height+10 && mouseY <= height-height+10+25) && something === 4){
+        attractor.mass += 1;
+    }
+//mass 2
+ if((mouseX >= width-width+12 && mouseX <= width-width+12+62 && 
+mouseY >= height-height+59 && mouseY <= height-height+59+25) && something === 4){
+        mover.mass -= 1;
+}
+if((mouseX >= width-width+87 && mouseX <= width-width+87+62 && 
+mouseY >= height-height+59 && mouseY <= height-height+59+25) && something === 4){
+       mover.mass += 1;
+}
+ //'Next' Button
+if((mouseX >= width/2-31 && mouseX <=width/2-31+62 && 
+mouseY >= height-height+10 && mouseY <= height-height+10+25) && something > 0){
+        something += 1;
+        a.position.y = height-height-multiplyWindM;
+        gsim.positionG.y = height-height-multiplyMass1w;
+        fr.position.x = 78;
+        fin = 0;
+        fr.velocity.x = 0;
+    }
+
+//Defenition Button for gravity
+if(def === 0 && (mouseX >= width-62-15 && mouseX <= width-62-15+62 && 
+mouseY >= height-height+59 && mouseY <= height-height+59+25) && something === 1){
+    def = 1;
+}
+//Def button Air Resistance
+if(def === 0 && (mouseX >= width-62-15 && mouseX <= width-62-15+62 && 
+mouseY >= height-height+59 && mouseY <= height-height+59+25) && something === 2){
+    def = 2;
+}
+//def button friction
+if(def === 0 && (mouseX >= width-62-15 && mouseX <= width-62-15+62 && 
+mouseY >= height-height+59 && mouseY <= height-height+59+25) && something === 3){
+    def = 3;
+}
+//form def button gravtiy attraction
+if(def === 0 && (mouseX >= width-62-15 && mouseX <= width-62-15+62 && 
+mouseY >= height-height+59 && mouseY <= height-height+59+25) && something === 4){
+    def = 4;
+}
+//exit def button
+if(def > 0 && (mouseX >= width-70 && mouseX <= width-70+20 && mouseY >= height-50 && mouseY <= height-50+20)){
+   def = 0;
+}
+};
+mousePressed = function(){
+mouse.mouseC();
+};
+mouseReleased = function(){
+mouse.mouseR();
+};
+//1 THOUSAND LINES IN 4 DAYS!
+
+    }};
+
+    var canvas = document.getElementById("mycanvas"); 
+
+    var processingInstance = new Processing(canvas, sketchProc); 
+ </script>
+
+</html>
